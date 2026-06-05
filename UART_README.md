@@ -77,118 +77,6 @@ UART_Transmitter/
 
 ---
 
-## 💻 Source Code
-
-### uart_tx.sv — Design Module
-```verilog
-module uart_tx (
-    input  clk,
-    input  rst,
-    input  start,
-    input  [7:0] data,
-    output reg tx,
-    output reg done
-);
-
-    parameter IDLE  = 2'b00;
-    parameter START = 2'b01;
-    parameter DATA  = 2'b10;
-    parameter STOP  = 2'b11;
-
-    reg [1:0] state;
-    reg [2:0] bit_count;
-    reg [7:0] shift_reg;
-
-    always @(posedge clk or posedge rst) begin
-        if (rst) begin
-            state     <= IDLE;
-            tx        <= 1;
-            done      <= 0;
-            bit_count <= 0;
-        end
-        else begin
-            case (state)
-                IDLE: begin
-                    tx   <= 1;
-                    done <= 0;
-                    if (start) begin
-                        shift_reg <= data;
-                        state     <= START;
-                    end
-                end
-                START: begin
-                    tx        <= 0;
-                    state     <= DATA;
-                    bit_count <= 0;
-                end
-                DATA: begin
-                    tx        <= shift_reg[0];
-                    shift_reg <= shift_reg >> 1;
-                    bit_count <= bit_count + 1;
-                    if (bit_count == 7)
-                        state <= STOP;
-                end
-                STOP: begin
-                    tx    <= 1;
-                    done  <= 1;
-                    state <= IDLE;
-                end
-            endcase
-        end
-    end
-endmodule
-```
-
-### uart_tx_tb.sv — Testbench
-```verilog
-module uart_tx_tb;
-
-    reg clk, rst, start;
-    reg [7:0] data;
-    wire tx, done;
-
-    uart_tx UUT (
-        .clk(clk),
-        .rst(rst),
-        .start(start),
-        .data(data),
-        .tx(tx),
-        .done(done)
-    );
-
-    always #5 clk = ~clk;
-
-    initial begin
-        clk   = 0;
-        rst   = 1;
-        start = 0;
-        data  = 8'b0;
-
-        #20 rst = 0;
-
-        #10 data = 8'h41; start = 1;
-        #10 start = 0;
-        wait(done == 1);
-        #20;
-
-        #10 data = 8'h55; start = 1;
-        #10 start = 0;
-        wait(done == 1);
-        #20;
-
-        $display("UART Transmission Complete!");
-        $finish;
-    end
-
-    initial begin
-        $monitor("Time=%0t | clk=%b rst=%b start=%b data=%h tx=%b done=%b",
-                  $time, clk, rst, start, data, tx, done);
-    end
-
-endmodule
-```
-
----
 
 ## ✅ Simulation Output
 
@@ -231,7 +119,7 @@ vlib work
 vmap work work
 vsim work.uart_tx_tb
 add wave *
-run -all
+
 ```
 
 **Step 5** — View waveform:
@@ -259,10 +147,7 @@ view wave
 | # | Project | Status |
 |---|---------|--------|
 | 1 | Half Adder | ✅ Completed |
-| 2 | Full Adder | ✅ Completed |
-| 3 | D Flip-Flop | ✅ Completed |
-| 4 | 4-bit Counter | ✅ Completed |
-| 5 | UART Transmitter | ✅ Completed |
+| 2 | UART Transmitter | ✅ Completed |
 
 ---
 
@@ -270,14 +155,14 @@ view wave
 
 **Vignesh R**
 - LinkedIn: [linkedin.com/in/vignesh-r-906157206](https://www.linkedin.com/in/vignesh-r-906157206)
-- GitHub: [Add your GitHub link here]
+- GitHub: https://github.com/Vignesh525174
 
 ---
 
 ## 📅 Date
 
-June 2026
+June 05, 2026
 
 ---
 
-*This is Project 5 of my VLSI Design Engineer learning journey. 🚀*
+*This is Project 2 of my VLSI Design Engineer learning journey. 🚀*
