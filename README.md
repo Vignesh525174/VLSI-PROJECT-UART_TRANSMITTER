@@ -73,6 +73,7 @@ UART_Transmitter/
 ├── uart_tx.sv        # UART Transmitter design module
 ├── uart_tx_tb.sv     # Testbench for simulation
 └── README.md         # Project documentation
+└── UART_TRANSMITTER  # UART Transmitter OUTPUT WAVEFORM
 ```
 
 ---
